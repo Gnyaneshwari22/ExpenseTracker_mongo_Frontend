@@ -1,50 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import API from "../services/api";
 
 const Payment = () => {
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-
-  // const initiatePayment = async () => {
-  //   try {
-  //     setLoading(true);
-  //     toast.info("Preparing payment gateway...", { autoClose: 2000 });
-
-  //     // 1. Create payment order in backend
-  //     const { data } = await API.post("/orders/pay", {
-  //       orderAmount: 10000, // ₹100 in paise
-  //       customerID: `user_${Date.now()}`,
-  //       customerPhone: "9876543210",
-  //     });
-
-  //     // 2. Dynamically import Cashfree
-  //     const { load } = await import("@cashfreepayments/cashfree-js");
-
-  //     // 3. Initialize Cashfree
-  //     const cashfree = await load({
-  //       mode:
-  //         process.env.REACT_APP_CF_ENV === "production"
-  //           ? "production"
-  //           : "sandbox",
-  //     });
-
-  //     // 4. Open checkout
-  //     cashfree.checkout({
-  //       paymentSessionId: data.paymentSessionId,
-  //       redirectTarget: "_self",
-  //     });
-  //   } catch (error) {
-  //     console.error("Payment error:", error);
-  //     toast.error(
-  //       error.response?.data?.error ||
-  //         "Payment initiation failed. Please try again."
-  //     );
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   // Auto-initiate payment when component mounts
   const initiatePayment = async () => {
