@@ -15,26 +15,56 @@ const PaymentStatus = () => {
       return navigate("/dashboard");
     }
 
+    // const verifyPayment = async (attempt = 1) => {
+    //   try {
+    //     toast.info(`Verifying payment (Attempt ${attempt})...`);
+    //     const { data } = await API.get(`/orders/status/${orderId}`); // Note: Added /api prefix
+
+    //     setStatus(data.status);
+
+    //     if (data.status === "SUCCESSFUL") {
+    //       toast.success("Payment successful! Premium activated.");
+    //       setTimeout(() => navigate("/dashboard"), 3000);
+    //     } else if (data.status === "FAILED") {
+    //       toast.error("Payment failed. Please try again.");
+    //       setTimeout(() => navigate("/pricing"), 3000);
+    //     } else if (attempt < 3) {
+    //       // Retry up to 3 times
+    //       setTimeout(() => verifyPayment(attempt + 1), 2000);
+    //     } else {
+    //       toast.info("Payment still processing. Check back later.");
+    //       setTimeout(() => navigate("/dashboard"), 3000);
+    //     }
+    //   } catch (error) {
+    //     console.error("Verification error:", error);
+    //     toast.error("Payment verification failed");
+    //     setTimeout(() => navigate("/dashboard"), 1500);
+    //   }
+    // };
+
     const verifyPayment = async (attempt = 1) => {
       try {
         toast.info(`Verifying payment (Attempt ${attempt})...`);
-        const { data } = await API.get(`/orders/status/${orderId}`); // Note: Added /api prefix
 
+        const { data } = await API.get(`/orders/status/${orderId}`);
         setStatus(data.status);
 
         if (data.status === "SUCCESSFUL") {
           toast.success("Payment successful! Premium activated.");
-          setTimeout(() => navigate("/dashboard"), 3000);
-        } else if (data.status === "FAILED") {
-          toast.error("Payment failed. Please try again.");
-          setTimeout(() => navigate("/pricing"), 3000);
-        } else if (attempt < 3) {
-          // Retry up to 3 times
-          setTimeout(() => verifyPayment(attempt + 1), 2000);
-        } else {
-          toast.info("Payment still processing. Check back later.");
-          setTimeout(() => navigate("/dashboard"), 3000);
+          return setTimeout(() => navigate("/dashboard"), 3000);
         }
+
+        if (data.status === "FAILED") {
+          toast.error("Payment failed. Please try again.");
+          return setTimeout(() => navigate("/pricing"), 3000);
+        }
+
+        if (attempt < 3) {
+          return setTimeout(() => verifyPayment(attempt + 1), 2000);
+        }
+
+        toast.info("Payment still processing. Check back later.");
+        setTimeout(() => navigate("/dashboard"), 3000);
       } catch (error) {
         console.error("Verification error:", error);
         toast.error("Payment verification failed");

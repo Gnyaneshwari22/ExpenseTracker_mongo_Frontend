@@ -44,7 +44,7 @@ const Login = () => {
         />
         <button className="btn btn-primary w-100">Login</button>
       </form>
-      <div className="mt-3">
+      <div className="mt-3 text-center">
         <Link to="/reset-password">Forgot Password?</Link>
       </div>
     </div>

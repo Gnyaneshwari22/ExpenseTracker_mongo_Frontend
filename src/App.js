@@ -36,7 +36,6 @@ function App() {
         {/* Protected Routes */}
         <Route element={<PrivateRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
-
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/payment" element={<Payment />} />
           <Route path="/payment-status" element={<PaymentStatus />} />

@@ -5,51 +5,30 @@ import API from "../services/api";
 const Payment = () => {
   const [loading, setLoading] = useState(false);
 
-  // Auto-initiate payment when component mounts
   const initiatePayment = async () => {
     try {
       setLoading(true);
-      toast.info("Preparing payment gateway...", { autoClose: 2000 });
+      toast.info("Preparing payment...", { autoClose: 2000 });
 
-      // 1. Create payment order in backend - Match backend expectations
       const { data } = await API.post("/orders/pay", {
-        amount: 100, // ₹1.00 in rupees (not paise)
+        amount: 100,
         customerId: `user_${Date.now()}`,
-        customerPhone: "9876543210", // Must be string
+        customerPhone: "9876543210",
       });
 
-      // 2. Load Cashfree SDK
-      const { load } = await import("@cashfreepayments/cashfree-js");
-
-      // 3. Initialize with proper mode
-      const cashfree = await load({
-        mode:
-          process.env.REACT_APP_CF_ENV === "production"
-            ? "production"
-            : "sandbox",
-      });
-
-      // 4. Verify session ID before proceeding
       if (!data.paymentSessionId) {
-        throw new Error("No payment session ID received");
+        throw new Error("Payment session not returned from server.");
       }
 
-      // 5. Open checkout
-      cashfree.checkout({
+      const cashfree = window.Cashfree({ mode: "sandbox" });
+
+      await cashfree.checkout({
         paymentSessionId: data.paymentSessionId,
         redirectTarget: "_self",
       });
-    } catch (error) {
-      console.error("Payment Error Details:", {
-        message: error.message,
-        response: error.response?.data,
-        request: error.config,
-      });
-
-      toast.error(
-        error.response?.data?.message ||
-          "Payment failed. Please check details and try again."
-      );
+    } catch (err) {
+      console.error("Payment Error:", err);
+      toast.error("Payment failed. Try again.");
     } finally {
       setLoading(false);
     }
@@ -63,7 +42,6 @@ const Payment = () => {
     <div className="container mt-4 text-center">
       <div className="card p-4" style={{ maxWidth: "500px", margin: "0 auto" }}>
         <h3 className="mb-4">Upgrade to Premium</h3>
-
         {loading ? (
           <>
             <div className="spinner-border text-primary mb-3" role="status">
@@ -72,18 +50,13 @@ const Payment = () => {
             <p>Redirecting to secure payment...</p>
           </>
         ) : (
-          <>
-            <p className="mb-4">
-              You'll be redirected to Cashfree's secure payment page
-            </p>
-            <button
-              className="btn btn-primary w-100"
-              onClick={initiatePayment}
-              disabled={loading}
-            >
-              {loading ? "Processing..." : "Proceed to Payment"}
-            </button>
-          </>
+          <button
+            className="btn btn-primary w-100"
+            onClick={initiatePayment}
+            disabled={loading}
+          >
+            Proceed to Payment
+          </button>
         )}
       </div>
     </div>
